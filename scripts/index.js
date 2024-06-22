@@ -152,3 +152,17 @@ todoListTabs.forEach((tab) => {
     renderTasks(filteredTask);
   });
 });
+
+const currentDateElement = document.querySelector("[date='date']");
+const currentDayElement = document.querySelector('[date="day"]');
+
+const currentDate = new Date();
+const currentWeekendDay = currentDate.toLocaleString('ru-RU', {
+  weekday: 'long',
+});
+const currentDay = currentDate.toLocaleString('ru', { day: 'numeric' });
+let currentMonth = currentDate.toLocaleString('ru', { month: 'long' });
+
+currentDayElement.textContent =
+  currentWeekendDay[0].toUpperCase() + currentWeekendDay.slice(1);
+currentDateElement.textContent = currentDay + ', ' + currentMonth;
