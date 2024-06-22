@@ -2,7 +2,8 @@ const todoForm = document.querySelector('.todo-form');
 const todoTaskInput = todoForm.querySelector("[name='task']");
 const todoDateInput = todoForm.querySelector("[name='date']");
 const todoList = document.querySelector('.todo-list');
-const searchInput = document.querySelector('.search');
+const todoListTabs = document.querySelectorAll('.todo-list-tabs > .tab');
+const searchInput = document.querySelector('.todo-search');
 
 const tasks = JSON.parse(localStorage.getItem('tasks')) ?? [];
 
@@ -124,4 +125,30 @@ todoDateInput.addEventListener('focus', (event) => {
 
 todoDateInput.addEventListener('blur', (event) => {
   event.target.type = 'text';
+});
+
+const getfilteredTasks = (tabStatus) => {
+  if (tabStatus === 'all') {
+    return tasks;
+  }
+  if (tabStatus === 'active') {
+    return tasks.filter((task) => !task.completed);
+  }
+  if (tabStatus === 'done') {
+    return tasks.filter((task) => task.completed);
+  }
+};
+
+todoListTabs.forEach((tab) => {
+  tab.addEventListener('click', (event) => {
+    const selectedTab = document.querySelector('.tab--selected');
+    if (selectedTab) {
+      selectedTab.classList.remove('tab--selected');
+    }
+    const currentTab = event.currentTarget;
+    currentTab.classList.toggle('tab--selected');
+    const tabStatus = currentTab.dataset.tab;
+    const filteredTask = getfilteredTasks(tabStatus);
+    renderTasks(filteredTask);
+  });
 });

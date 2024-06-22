@@ -18,7 +18,14 @@
   </head>
   <body>
     <div class="center-wrapper">
-      <input type="text" class="search" />
+      <div class="todo-date-wrapper">
+        <h2 class="title" data-date="day">Среда</h2>
+        <p class="subtitle" data-date="date">3 января</p>
+      </div>
+      <div class="todo-search-wrapper">
+        <input type="text" class="todo-search" placeholder="Поиск" />
+        <span class="material-symbols-outlined todo-search-icon">search</span>
+      </div>
       <div class="todo-form-wrapper">
         <h2 class="title">Новая запись</h2>
         <form action="" class="todo-form">
@@ -50,6 +57,20 @@
       </div>
       <div class="todo-list-wrapper">
         <h2 class="title">Список дел</h2>
+        <div class="todo-list-tabs">
+          <button class="tab" data-tab="all">
+            <span class="material-symbols-outlined tab__icon">check</span>
+            Все
+          </button>
+          <button class="tab" data-tab="active">
+            <span class="material-symbols-outlined tab__icon">check</span>
+            Активные
+          </button>
+          <button class="tab" data-tab="done">
+            <span class="material-symbols-outlined tab__icon">check</span>
+            Завершенные
+          </button>
+        </div>
         <ul class="todo-list"></ul>
       </div>
     </div>
