@@ -18,11 +18,22 @@
   </head>
   <body>
     <div class="center-wrapper">
-      <div class="container">
+      <input type="text" class="search" />
+      <div class="todo-form-wrapper">
         <h2 class="title">Новая запись</h2>
         <form action="" class="todo-form">
-          <input type="text" class="todo-form__input" placeholder="Описание" />
-          <input type="text" class="todo-form__input" placeholder="Дата" />
+          <input
+            type="text"
+            class="todo-form__input"
+            name="task"
+            placeholder="Описание"
+          />
+          <input
+            type="text"
+            class="todo-form__input"
+            name="date"
+            placeholder="Дата"
+          />
           <div class="todo-form__actions">
             <input
               type="submit"
@@ -37,20 +48,9 @@
           </div>
         </form>
       </div>
-      <div class="container">
+      <div class="todo-list-wrapper">
         <h2 class="title">Список дел</h2>
-        <ul class="todo-list">
-          <li class="todo-list__item task task--done">
-            <input type="checkbox" class="task__check" />
-            <div class="task__date">10 января, 11:30</div>
-            <div class="task__text">Покормить кошку</div>
-          </li>
-          <li class="todo-list__item task">
-            <input type="checkbox" class="task__check" />
-            <div class="task__date">10 января, 11:30</div>
-            <div class="task__text">Покормить кошку</div>
-          </li>
-        </ul>
+        <ul class="todo-list"></ul>
       </div>
     </div>
     <script src="scripts/index.js"></script>
