@@ -157,7 +157,6 @@ body {
     background-color: #E8DEF8;
 }
 
-
 .tab__icon {
     display: none;
 }
@@ -203,14 +202,29 @@ body {
     color: #1D1B1E
 }
 
+.task-date {
+    grid-row-start: 1;
+    grid-row-end: 2;
+}
+
 .task__text {
     font-size: 16px;
+    grid-row-start: 2;
+    grid-row-end: 3;
+}
+
+.task__delete {
+    grid-row-start: 1;
+    grid-row-end: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
 .task--done .task__date,
 .task--done .task__text {
     color: rgba(29, 27, 30, 0.5);
-
 }
 
 .task--done .task__text {

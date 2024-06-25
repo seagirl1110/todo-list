@@ -5,7 +5,7 @@ const todoList = document.querySelector('.todo-list');
 const todoListTabs = document.querySelectorAll('.todo-list-tabs > .tab');
 const searchInput = document.querySelector('.todo-search');
 
-const tasks = JSON.parse(localStorage.getItem('tasks')) ?? [];
+let tasks = JSON.parse(localStorage.getItem('tasks')) ?? [];
 
 const searchTasks = (tasksList, taskValue) => {
   const filteredTasks = tasksList.filter((task) =>
@@ -58,17 +58,32 @@ const createTask = (taskObj) => {
   taskText.setAttribute('class', 'task__text');
   taskText.textContent = taskObj.taskText;
 
-  task.append(check, taskDate, taskText);
+  const deleteBtn = document.createElement('span');
+  deleteBtn.setAttribute('class', 'material-symbols-outlined task__delete');
+  deleteBtn.textContent = 'delete';
+
+  const deleteTask = (taskID) => {
+    const filteredTasks = tasks.filter((item) => item.id !== taskID);
+    localStorage.setItem('tasks', JSON.stringify(filteredTasks));
+    tasks = filteredTasks;
+    renderTasks(filteredTasks);
+  };
+
+  deleteBtn.addEventListener('click', () => {
+    deleteTask(taskObj.id);
+  });
+
+  task.append(check, taskDate, taskText, deleteBtn);
 
   todoList.append(task);
 };
 
-const renderTasks = (tasksList) => {
+function renderTasks(tasksList) {
   todoList.innerHTML = '';
   tasksList.forEach((task) => {
     createTask(task);
   });
-};
+}
 
 if (tasks.length === 0) {
   const todoListWrapper = document.querySelector('.todo-list-wrapper');
