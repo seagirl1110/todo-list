@@ -1,6 +1,7 @@
 const todoForm = document.querySelector('.todo-form');
 const todoTaskInput = todoForm.querySelector("[name='task']");
 const todoDateInput = todoForm.querySelector("[name='date']");
+const todoListWrapper = document.querySelector('.todo-list-wrapper');
 const todoList = document.querySelector('.todo-list');
 const todoListTabs = document.querySelectorAll('.todo-list-tabs > .tab');
 const searchInput = document.querySelector('.todo-search');
@@ -66,7 +67,11 @@ const createTask = (taskObj) => {
     const filteredTasks = tasks.filter((item) => item.id !== taskID);
     localStorage.setItem('tasks', JSON.stringify(filteredTasks));
     tasks = filteredTasks;
-    renderTasks(filteredTasks);
+    if (tasks.length === 0) {
+      todoListWrapper.style.display = 'none';
+    } else {
+      renderTasks(filteredTasks);
+    }
   };
 
   deleteBtn.addEventListener('click', () => {
@@ -86,7 +91,6 @@ function renderTasks(tasksList) {
 }
 
 if (tasks.length === 0) {
-  const todoListWrapper = document.querySelector('.todo-list-wrapper');
   todoListWrapper.style.display = 'none';
 } else {
   renderTasks(tasks);
@@ -108,12 +112,14 @@ const addTask = (taskText, taskDate) => {
   };
   tasks.push(newTask);
   localStorage.setItem('tasks', JSON.stringify(tasks));
+  if (tasks.length === 1) {
+    todoListWrapper.style.display = 'flex';
+  }
   renderTasks(tasks);
 };
 
 todoForm.addEventListener('submit', (event) => {
   event.preventDefault();
-
   const taskText = todoTaskInput.value;
   const taskDate = todoDateInput.value;
   if (taskText && taskDate) {
