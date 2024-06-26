@@ -4,96 +4,83 @@ const todoDateInput = todoForm.querySelector("[name='date']");
 const todoListWrapper = document.querySelector('.todo-list-wrapper');
 const todoList = document.querySelector('.todo-list');
 const todoListTabs = document.querySelectorAll('.todo-list-tabs > .tab');
-const searchInput = document.querySelector('.todo-search');
 
 let tasks = JSON.parse(localStorage.getItem('tasks')) ?? [];
 
-const searchTasks = (tasksList, taskValue) => {
-  const filteredTasks = tasksList.filter((task) =>
-    task.taskText.includes(taskValue)
-  );
-  renderTasks(filteredTasks);
-};
-
-searchInput.addEventListener('input', () => {
-  searchTasks(tasks, searchInput.value);
-});
-
-const createTask = (taskObj) => {
-  const task = document.createElement('li');
-  task.setAttribute('class', 'todo-list__item task');
-
-  const check = document.createElement('input');
-  check.setAttribute('type', 'checkbox');
-  check.setAttribute('class', 'task__check');
-
-  const setChecked = () => {
-    if (taskObj.completed) {
-      task.classList.add('task--done');
-      check.checked = true;
-    } else {
-      task.classList.remove('task--done');
-      check.checked = false;
-    }
-  };
-  setChecked();
-
-  const toggleChecked = () => {
-    const tasksElement = tasks.find((item) => item.id === taskObj.id);
-    if (check.checked) {
-      tasksElement.completed = true;
-    } else {
-      tasksElement.completed = false;
-    }
-    setChecked();
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  };
-
-  check.addEventListener('change', toggleChecked);
-
-  const taskDate = document.createElement('div');
-  taskDate.setAttribute('class', 'task__date');
-  taskDate.textContent = taskObj.taskDate;
-
-  const taskText = document.createElement('div');
-  taskText.setAttribute('class', 'task__text');
-  taskText.textContent = taskObj.taskText;
-
-  const deleteBtn = document.createElement('span');
-  deleteBtn.setAttribute('class', 'material-symbols-outlined task__delete');
-  deleteBtn.textContent = 'delete';
-
-  const deleteTask = (taskID) => {
-    const filteredTasks = tasks.filter((item) => item.id !== taskID);
-    localStorage.setItem('tasks', JSON.stringify(filteredTasks));
-    tasks = filteredTasks;
-    if (tasks.length === 0) {
-      todoListWrapper.style.display = 'none';
-    } else {
-      renderTasks(filteredTasks);
-    }
-  };
-
-  deleteBtn.addEventListener('click', () => {
-    deleteTask(taskObj.id);
-  });
-
-  task.append(check, taskDate, taskText, deleteBtn);
-
-  todoList.append(task);
-};
-
-function renderTasks(tasksList) {
+const renderTasks = (tasksList = tasks) => {
+  if (tasks.length === 0) {
+    todoListWrapper.style.display = 'none';
+  }
+  if (tasks.length === 1) {
+    todoListWrapper.style.display = 'flex';
+  }
   todoList.innerHTML = '';
   tasksList.forEach((task) => {
-    createTask(task);
+    createTaskEl(task);
   });
+};
+
+renderTasks();
+
+function createTaskEl(task) {
+  const taskEl = createEl('li', 'todo-list__item task');
+
+  const checkEl = createEl('input', 'task__check');
+  checkEl.setAttribute('type', 'checkbox');
+
+  setChecked(task.completed, taskEl, checkEl);
+
+  checkEl.addEventListener('change', () => {
+    toggleChecked(task.id, checkEl);
+    setChecked(task.completed, taskEl, checkEl);
+  });
+
+  const dateEl = createEl('div', 'task__date', task.date);
+  const textEl = createEl('div', 'task__text', task.text);
+
+  const deleteBtn = createEl(
+    'span',
+    'material-symbols-outlined task__delete',
+    'delete'
+  );
+
+  deleteBtn.addEventListener('click', () => {
+    deleteTask(task.id);
+    renderTasks();
+  });
+
+  taskEl.append(checkEl, dateEl, textEl, deleteBtn);
+
+  todoList.append(taskEl);
 }
 
-if (tasks.length === 0) {
-  todoListWrapper.style.display = 'none';
-} else {
-  renderTasks(tasks);
+function createEl(tag, className, text) {
+  const element = document.createElement(tag);
+  element.setAttribute('class', className);
+  if (text) {
+    element.textContent = text;
+  }
+  return element;
+}
+
+function setChecked(taskCompleted, taskEl, checkEl) {
+  if (taskCompleted) {
+    taskEl.classList.add('task--done');
+    checkEl.checked = true;
+  } else {
+    taskEl.classList.remove('task--done');
+    checkEl.checked = false;
+  }
+}
+
+function toggleChecked(taskID, checkEl) {
+  const task = tasks.find((item) => item.id === taskID);
+  if (checkEl.checked) {
+    task.completed = true;
+  } else {
+    task.completed = false;
+  }
+  localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
 const clearInput = () => {
@@ -103,32 +90,38 @@ const clearInput = () => {
   todoTaskInput.placeholder = 'Описание';
 };
 
-const addTask = (taskText, taskDate) => {
+const addTask = (text, date) => {
   const newTask = {
     id: Math.random(),
-    taskText,
-    taskDate,
+    text,
+    date,
     completed: false,
   };
   tasks.push(newTask);
   localStorage.setItem('tasks', JSON.stringify(tasks));
-  if (tasks.length === 1) {
-    todoListWrapper.style.display = 'flex';
-  }
-  renderTasks(tasks);
+};
+
+function deleteTask(taskID) {
+  const filteredTasks = tasks.filter((item) => item.id !== taskID);
+  tasks = filteredTasks;
+  localStorage.setItem('tasks', JSON.stringify(filteredTasks));
+}
+
+const setRequiredInput = (input) => {
+  input.setAttribute('placeholder', 'Поле обязательно для заполнения');
 };
 
 todoForm.addEventListener('submit', (event) => {
   event.preventDefault();
+
   const taskText = todoTaskInput.value;
   const taskDate = todoDateInput.value;
+
   if (taskText && taskDate) {
     addTask(taskText, taskDate);
     clearInput();
+    renderTasks();
   } else {
-    const setRequiredInput = (input) => {
-      input.setAttribute('placeholder', 'Поле обязательно для заполнения');
-    };
     if (!todoDateInput.value) {
       setRequiredInput(todoDateInput);
     }
@@ -148,7 +141,7 @@ todoDateInput.addEventListener('blur', (event) => {
   event.target.type = 'text';
 });
 
-const getfilteredTasks = (tabStatus) => {
+const getTasksByStatus = (tabStatus) => {
   if (tabStatus === 'all') {
     return tasks;
   }
@@ -160,18 +153,35 @@ const getfilteredTasks = (tabStatus) => {
   }
 };
 
+const setSelectedTab = (tab) => {
+  const selectedTab = document.querySelector('.tab--selected');
+  if (selectedTab) {
+    selectedTab.classList.remove('tab--selected');
+  }
+
+  tab.classList.add('tab--selected');
+};
+
 todoListTabs.forEach((tab) => {
   tab.addEventListener('click', (event) => {
-    const selectedTab = document.querySelector('.tab--selected');
-    if (selectedTab) {
-      selectedTab.classList.remove('tab--selected');
-    }
     const currentTab = event.currentTarget;
-    currentTab.classList.toggle('tab--selected');
-    const tabStatus = currentTab.dataset.tab;
-    const filteredTask = getfilteredTasks(tabStatus);
-    renderTasks(filteredTask);
+    setSelectedTab(currentTab);
+
+    const status = currentTab.dataset.tab;
+    const statusTasks = getTasksByStatus(status);
+    renderTasks(statusTasks);
   });
+});
+
+const searchInput = document.querySelector('.todo-search');
+
+const getTasksByValue = (tasksList, taskValue) => {
+  return tasksList.filter((task) => task.text.includes(taskValue));
+};
+
+searchInput.addEventListener('input', () => {
+  const searchTasks = getTasksByValue(tasks, searchInput.value);
+  renderTasks(searchTasks);
 });
 
 const currentDateElement = document.querySelector("[date='date']");
@@ -181,8 +191,8 @@ const currentDate = new Date();
 const currentWeekendDay = currentDate.toLocaleString('ru-RU', {
   weekday: 'long',
 });
-const currentDay = currentDate.toLocaleString('ru', { day: 'numeric' });
-let currentMonth = currentDate.toLocaleString('ru', { month: 'long' });
+const currentDay = currentDate.toLocaleString('ru-RU', { day: 'numeric' });
+const currentMonth = currentDate.toLocaleString('ru-RU', { month: 'long' });
 
 currentDayElement.textContent =
   currentWeekendDay[0].toUpperCase() + currentWeekendDay.slice(1);
